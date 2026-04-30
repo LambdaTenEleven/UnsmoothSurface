@@ -19,8 +19,8 @@ namespace LambdaTenEleven.UnsmoothSurface
 
         public Designator_Unsmooth()
         {
-            defaultLabel = UnsmoothConstants.Labels.UnsmoothSurface;
-            defaultDesc = UnsmoothConstants.Descriptions.UnsmoothDesignator;
+            defaultLabel = UnsmoothConstants.TranslationKeys.DesignatorUnsmoothSurface.Translate();
+            defaultDesc = UnsmoothConstants.TranslationKeys.DesignatorUnsmoothSurfaceDesc.Translate();
             icon = ContentFinder<Texture2D>.Get(UnsmoothConstants.TexturePaths.UnsmoothDesignator);
             soundDragSustain = SoundDefOf.Designate_DragStandard;
             soundDragChanged = SoundDefOf.Designate_DragStandard_Changed;
@@ -36,12 +36,12 @@ namespace LambdaTenEleven.UnsmoothSurface
 
             if (Map.designationManager.DesignationAt(c, UnsmoothDesignationDef) != null)
             {
-                return UnsmoothConstants.Messages.AlreadyDesignated;
+                return UnsmoothConstants.TranslationKeys.SurfaceBeingUnsmoothed.Translate();
             }
 
             if (!UnsmoothUtility.CanUnsmooth(c, Map))
             {
-                return UnsmoothConstants.Messages.MustDesignateSmoothedSurface;
+                return UnsmoothConstants.TranslationKeys.MessageMustDesignateUnsmoothableSurface.Translate();
             }
 
             return true;

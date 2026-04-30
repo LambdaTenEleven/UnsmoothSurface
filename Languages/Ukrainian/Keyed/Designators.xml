@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <DesignatorUnsmoothSurface>Розбити відполіровану поверхню</DesignatorUnsmoothSurface>
+  <DesignatorUnsmoothSurfaceDesc>Позначити відполіровані кам'яні покриття та стіни для повернення до грубого стану.</DesignatorUnsmoothSurfaceDesc>
+  <DesignatorUnsmoothWallDesc>Розбити цю відполіровану кам'яну стіну, повернувши її до грубого стану.</DesignatorUnsmoothWallDesc>
+  <SurfaceBeingUnsmoothed>Територія вже відмічена для розбивання.</SurfaceBeingUnsmoothed>
+
+</LanguageData>

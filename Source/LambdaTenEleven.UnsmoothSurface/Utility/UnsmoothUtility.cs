@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Verse;
 
 namespace LambdaTenEleven.UnsmoothSurface
@@ -39,7 +38,7 @@ namespace LambdaTenEleven.UnsmoothSurface
             var roughWall = RoughWallFor(edifice);
             if (roughWall != null)
             {
-                edifice.Destroy();
+                edifice.Destroy(DestroyMode.WillReplace);
                 GenSpawn.Spawn(roughWall, cell, map);
                 return true;
             }
@@ -68,11 +67,13 @@ namespace LambdaTenEleven.UnsmoothSurface
 
         private static void BuildTerrainLookup()
         {
-            var terrainDefs = DefDatabase<TerrainDef>.AllDefsListForReading;
-            var roughTerrainDefs = terrainDefs.Where(roughTerrain => roughTerrain.smoothedTerrain != null);
-            foreach (var roughTerrain in roughTerrainDefs)
+            foreach (var roughTerrain in DefDatabase<TerrainDef>.AllDefsListForReading)
             {
-                roughTerrainBySmoothedTerrain[roughTerrain.smoothedTerrain] = roughTerrain;
+                var smoothedTerrain = roughTerrain.smoothedTerrain;
+                if (smoothedTerrain != null && smoothedTerrain != roughTerrain)
+                {
+                    roughTerrainBySmoothedTerrain[smoothedTerrain] = roughTerrain;
+                }
             }
 
             // manual lookup if a mod adds a smoothed terrain without a smoothed terrain def
@@ -107,10 +108,22 @@ namespace LambdaTenEleven.UnsmoothSurface
         private static void BuildWallLookup()
         {
             var thingDefs = DefDatabase<ThingDef>.AllDefsListForReading;
-            var roughWallsDefs = thingDefs.Where(roughWall => roughWall.building?.smoothedThing != null);
-            foreach (var roughWallDef in roughWallsDefs)
+            foreach (var smoothedWall in thingDefs)
             {
-                roughWallBySmoothedWall[roughWallDef.building.smoothedThing] = roughWallDef;
+                var roughWall = smoothedWall.building?.unsmoothedThing;
+                if (roughWall?.building != null && roughWall != smoothedWall)
+                {
+                    roughWallBySmoothedWall[smoothedWall] = roughWall;
+                }
+            }
+
+            foreach (var roughWall in thingDefs)
+            {
+                var smoothedWall = roughWall.building?.smoothedThing;
+                if (smoothedWall?.building != null && smoothedWall != roughWall && !roughWallBySmoothedWall.ContainsKey(smoothedWall))
+                {
+                    roughWallBySmoothedWall[smoothedWall] = roughWall;
+                }
             }
 
             // manual lookup if a mod adds a smoothed wall without a smoothed thing

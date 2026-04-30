@@ -20,23 +20,11 @@ namespace LambdaTenEleven.UnsmoothSurface
         {
             internal const string DesignatorCancel = "DesignatorCancel";
             internal const string DesignatorCancelDesc = "DesignatorCancelDesc";
-        }
-
-        internal static class Labels
-        {
-            internal const string UnsmoothSurface = "Unsmooth surface";
-        }
-
-        internal static class Descriptions
-        {
-            internal const string UnsmoothDesignator = "Break up smoothed rock floors and walls, reverting them to rough stone.";
-            internal const string UnsmoothWall = "Break up this smoothed rock wall, reverting it to rough stone.";
-        }
-
-        internal static class Messages
-        {
-            internal const string AlreadyDesignated = "Already designated.";
-            internal const string MustDesignateSmoothedSurface = "Must designate smoothed rock floor or wall.";
+            internal const string DesignatorUnsmoothSurface = "DesignatorUnsmoothSurface";
+            internal const string DesignatorUnsmoothSurfaceDesc = "DesignatorUnsmoothSurfaceDesc";
+            internal const string DesignatorUnsmoothWallDesc = "DesignatorUnsmoothWallDesc";
+            internal const string SurfaceBeingUnsmoothed = "SurfaceBeingUnsmoothed";
+            internal const string MessageMustDesignateUnsmoothableSurface = "MessageMustDesignateUnsmoothableSurface";
         }
 
         internal static class TutorTags

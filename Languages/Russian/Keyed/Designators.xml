@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <DesignatorUnsmoothSurface>Разбить выровненную поверхность</DesignatorUnsmoothSurface>
+  <DesignatorUnsmoothSurfaceDesc>Обозначить выровненные каменные полы и стены для возвращения в необработанное состояние.</DesignatorUnsmoothSurfaceDesc>
+  <DesignatorUnsmoothWallDesc>Разбить эту выровненную каменную стену, вернув её в необработанное состояние.</DesignatorUnsmoothWallDesc>
+  <SurfaceBeingUnsmoothed>Поверхность уже отмечена для разбивания.</SurfaceBeingUnsmoothed>
+
+</LanguageData>

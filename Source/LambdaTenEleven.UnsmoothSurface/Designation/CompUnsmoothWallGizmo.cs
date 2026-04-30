@@ -38,8 +38,8 @@ namespace LambdaTenEleven.UnsmoothSurface
 
             yield return new Command_Action
             {
-                defaultLabel = UnsmoothConstants.Labels.UnsmoothSurface,
-                defaultDesc = UnsmoothConstants.Descriptions.UnsmoothWall,
+                defaultLabel = UnsmoothConstants.TranslationKeys.DesignatorUnsmoothSurface.Translate(),
+                defaultDesc = UnsmoothConstants.TranslationKeys.DesignatorUnsmoothWallDesc.Translate(),
                 icon = ContentFinder<Texture2D>.Get(UnsmoothConstants.TexturePaths.UnsmoothDesignator),
                 action = delegate
                 {

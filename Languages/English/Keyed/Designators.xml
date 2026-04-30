@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <DesignatorUnsmoothSurface>Unsmooth surface</DesignatorUnsmoothSurface>
+  <DesignatorUnsmoothSurfaceDesc>Break up smoothed rock floors and walls, reverting them to rough stone.</DesignatorUnsmoothSurfaceDesc>
+  <DesignatorUnsmoothWallDesc>Break up this smoothed rock wall, reverting it to rough stone.</DesignatorUnsmoothWallDesc>
+  <SurfaceBeingUnsmoothed>The surface is already marked for unsmoothing.</SurfaceBeingUnsmoothed>
+
+</LanguageData>
