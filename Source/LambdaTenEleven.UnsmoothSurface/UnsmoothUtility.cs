@@ -75,34 +75,6 @@ namespace LambdaTenEleven.UnsmoothSurface
                     roughTerrainBySmoothedTerrain[smoothedTerrain] = roughTerrain;
                 }
             }
-
-            // manual lookup if a mod adds a smoothed terrain without a smoothed terrain def
-            // foreach (var smoothedTerrain in terrainDefs)
-            // {
-            //     if (!smoothedTerrain.defName.EndsWith(UnsmoothConstants.DefNamePatterns.SmoothSuffix) || roughTerrainBySmoothedTerrain.ContainsKey(smoothedTerrain))
-            //     {
-            //         continue;
-            //     }
-            //
-            //     var roughHewnDefName = smoothedTerrain.defName.Replace(
-            //         UnsmoothConstants.DefNamePatterns.SmoothSuffix,
-            //         UnsmoothConstants.DefNamePatterns.RoughHewnSuffix);
-            //     var roughHewnTerrain = DefDatabase<TerrainDef>.GetNamedSilentFail(roughHewnDefName);
-            //     if (roughHewnTerrain != null)
-            //     {
-            //         roughTerrainBySmoothedTerrain[smoothedTerrain] = roughHewnTerrain;
-            //         continue;
-            //     }
-            //
-            //     var roughTerrainDefName = smoothedTerrain.defName.Substring(
-            //         0,
-            //         smoothedTerrain.defName.Length - UnsmoothConstants.DefNamePatterns.SmoothSuffix.Length);
-            //     var roughTerrain = DefDatabase<TerrainDef>.GetNamedSilentFail(roughTerrainDefName);
-            //     if (roughTerrain != null)
-            //     {
-            //         roughTerrainBySmoothedTerrain[smoothedTerrain] = roughTerrain;
-            //     }
-            // }
         }
 
         private static void BuildWallLookup()
@@ -120,27 +92,11 @@ namespace LambdaTenEleven.UnsmoothSurface
             foreach (var roughWall in thingDefs)
             {
                 var smoothedWall = roughWall.building?.smoothedThing;
-                if (smoothedWall?.building != null && smoothedWall != roughWall && !roughWallBySmoothedWall.ContainsKey(smoothedWall))
+                if (smoothedWall?.building != null && smoothedWall != roughWall)
                 {
-                    roughWallBySmoothedWall[smoothedWall] = roughWall;
+                    roughWallBySmoothedWall.TryAdd(smoothedWall, roughWall);
                 }
             }
-
-            // manual lookup if a mod adds a smoothed wall without a smoothed thing
-            // foreach (var smoothedWall in thingDefs)
-            // {
-            //     if (!smoothedWall.defName.StartsWith(UnsmoothConstants.DefNamePatterns.SmoothedPrefix) || roughWallBySmoothedWall.ContainsKey(smoothedWall))
-            //     {
-            //         continue;
-            //     }
-            //
-            //     var roughWallDefName = smoothedWall.defName.Substring(UnsmoothConstants.DefNamePatterns.SmoothedPrefix.Length);
-            //     var roughWall = DefDatabase<ThingDef>.GetNamedSilentFail(roughWallDefName);
-            //     if (roughWall?.building != null)
-            //     {
-            //         roughWallBySmoothedWall[smoothedWall] = roughWall;
-            //     }
-            // }
         }
     }
 }

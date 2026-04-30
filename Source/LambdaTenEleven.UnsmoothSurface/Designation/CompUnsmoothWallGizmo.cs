@@ -43,7 +43,10 @@ namespace LambdaTenEleven.UnsmoothSurface
                 icon = ContentFinder<Texture2D>.Get(UnsmoothConstants.TexturePaths.UnsmoothDesignator),
                 action = delegate
                 {
-                    parent.Map.designationManager.AddDesignation(new Designation(parent.Position, UnsmoothDesignationDef));
+                    if (parent.Map.designationManager.DesignationAt(parent.Position, UnsmoothDesignationDef) == null)
+                    {
+                        parent.Map.designationManager.AddDesignation(new Designation(parent.Position, UnsmoothDesignationDef));
+                    }
                 }
             };
         }
