@@ -17,7 +17,7 @@ namespace LambdaTenEleven.UnsmoothSurface
             }
 
             var designation = parent.Map.designationManager.DesignationAt(parent.Position, UnsmoothDesignationDef);
-            if (designation != null)
+            if (!DebugSettings.godMode && designation != null)
             {
                 var cancelDesignator = new Designator_Cancel();
                 yield return new Command_Action
@@ -43,9 +43,21 @@ namespace LambdaTenEleven.UnsmoothSurface
                 icon = ContentFinder<Texture2D>.Get(UnsmoothConstants.TexturePaths.UnsmoothDesignator),
                 action = delegate
                 {
-                    if (parent.Map.designationManager.DesignationAt(parent.Position, UnsmoothDesignationDef) == null)
+                    var map = parent.Map;
+                    var position = parent.Position;
+                    if (DebugSettings.godMode)
                     {
-                        parent.Map.designationManager.AddDesignation(new Designation(parent.Position, UnsmoothDesignationDef));
+                        UnsmoothUtility.TryUnsmooth(position, map);
+
+                        var existingDesignation = map.designationManager.DesignationAt(position, UnsmoothDesignationDef);
+                        if (existingDesignation != null)
+                        {
+                            map.designationManager.RemoveDesignation(existingDesignation);
+                        }
+                    }
+                    else if (map.designationManager.DesignationAt(position, UnsmoothDesignationDef) == null)
+                    {
+                        map.designationManager.AddDesignation(new Designation(position, UnsmoothDesignationDef));
                     }
                 }
             };

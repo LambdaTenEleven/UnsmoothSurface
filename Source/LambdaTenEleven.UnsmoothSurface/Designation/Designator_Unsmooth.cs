@@ -10,6 +10,8 @@ namespace LambdaTenEleven.UnsmoothSurface
 
         private static DesignationDef UnsmoothDesignationDef => DefDatabase<DesignationDef>.GetNamed(UnsmoothConstants.DefNames.UnsmoothDesignation);
 
+        protected override DesignationDef Designation => UnsmoothDesignationDef;
+
         public override bool DragDrawMeasurements => true;
 
         public override void SelectedUpdate()
@@ -34,7 +36,7 @@ namespace LambdaTenEleven.UnsmoothSurface
                 return false;
             }
 
-            if (Map.designationManager.DesignationAt(c, UnsmoothDesignationDef) != null)
+            if (!DebugSettings.godMode && Map.designationManager.DesignationAt(c, UnsmoothDesignationDef) != null)
             {
                 return UnsmoothConstants.TranslationKeys.SurfaceBeingUnsmoothed.Translate();
             }
@@ -47,9 +49,40 @@ namespace LambdaTenEleven.UnsmoothSurface
             return true;
         }
 
+        public override AcceptanceReport CanDesignateThing(Thing t)
+        {
+            if (!t.Spawned || t.Map != Map)
+            {
+                return false;
+            }
+
+            return CanDesignateCell(t.Position);
+        }
+
         public override void DesignateSingleCell(IntVec3 c)
         {
-            Map.designationManager.AddDesignation(new Designation(c, UnsmoothDesignationDef));
+            var map = Map;
+            if (!DebugSettings.godMode)
+            {
+                if (map.designationManager.DesignationAt(c, UnsmoothDesignationDef) == null)
+                {
+                    map.designationManager.AddDesignation(new Designation(c, UnsmoothDesignationDef));
+                }
+                return;
+            }
+
+            UnsmoothUtility.TryUnsmooth(c, map);
+
+            var designation = map.designationManager.DesignationAt(c, UnsmoothDesignationDef);
+            if (designation != null)
+            {
+                map.designationManager.RemoveDesignation(designation);
+            }
+        }
+
+        public override void DesignateThing(Thing t)
+        {
+            DesignateSingleCell(t.Position);
         }
     }
 }
