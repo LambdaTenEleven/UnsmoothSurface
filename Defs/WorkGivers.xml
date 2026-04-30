@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <WorkGiverDef>
+    <defName>WorkGiver_UnsmoothSurface</defName>
+    <label>break up smoothed rock surfaces</label>
+    <giverClass>LambdaTenEleven.UnsmoothSurface.WorkGiver_UnsmoothSurface</giverClass>
+    <workType>Mining</workType>
+    <priorityInType>90</priorityInType>
+    <verb>break up</verb>
+    <gerund>breaking up</gerund>
+    <tagToGive>Fieldwork</tagToGive>
+    <scanThings>false</scanThings>
+    <scanCells>true</scanCells>
+    <requiredCapacities>
+      <li>Manipulation</li>
+    </requiredCapacities>
+  </WorkGiverDef>
+
+</Defs>

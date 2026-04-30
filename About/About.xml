@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+  <name>Unsmooth Surface</name>
+  <author>LambdaTenEleven</author>
+  <supportedVersions>
+    <li>1.6</li>
+  </supportedVersions>
+  <packageId>LambdaTenEleven.UnsmoothSurface</packageId>
+  <description>Adds a designator allowing pawns to break up smoothed rock floors and walls back into rough stone.</description>
+</ModMetaData>

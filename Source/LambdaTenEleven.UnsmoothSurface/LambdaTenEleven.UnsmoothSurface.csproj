@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net472</TargetFramework>
+        <ImplicitUsings>disable</ImplicitUsings>
+        <AssemblyName>LambdaTenEleven.UnsmoothSurface</AssemblyName>
+        <RootNamespace>LambdaTenEleven.UnsmoothSurface</RootNamespace>
+        <OutputPath>..\..\Assemblies\</OutputPath>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Krafs.Rimworld.Ref" Version="1.6.4633" />
+    </ItemGroup>
+
+</Project>

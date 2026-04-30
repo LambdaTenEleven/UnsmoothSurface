@@ -1,0 +1,35 @@
+# JetBrains Rider / IntelliJ
+.idea/
+*.sln.DotSettings.user
+
+# Visual Studio / .NET user files
+.vs/
+*.user
+*.userosscache
+*.suo
+*.rsuser
+
+# Build output from the source project
+**/bin/
+**/obj/
+
+# NuGet / MSBuild generated state
+*.nupkg
+*.snupkg
+packages/
+project.lock.json
+
+# Logs and local temp files
+*.log
+*.tmp
+*.temp
+*.bak
+*.orig
+
+# OS metadata
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Local Steam Workshop metadata
+PublishedFileId.txt
