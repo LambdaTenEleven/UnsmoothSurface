@@ -10,9 +10,7 @@ Adds a new job `UnsmoothSurfaceJob` (check [Jobs.xml](Defs/Jobs.xml)) that requr
 
 In theory, it should support modded rocky walls and floors, tested it with Alpha Biomes.
 
-[SmoothedWallGizmoPatch.xml](Patches/SmoothedWallGizmoPatch.xml) shows the gizmo on `smoothedThing`, so it should work with any smoothed wall.
-
-And for the Order action, [UnsmoothUtility.cs](Source/LambdaTenEleven.UnsmoothSurface/UnsmoothUtility.cs) builds two lookups for walls and floors after the game loads.
+[UnsmoothUtility.cs](Source/LambdaTenEleven.UnsmoothSurface/UnsmoothUtility.cs) builds two lookups for walls and floors after the game loads.
 
 If several rough floors or walls point to the same smoothed def, the mod skips that ambiguous mapping and logs a warning. Modders can resolve it with a `DefModExtension` on the smoothed def:
 
@@ -24,7 +22,15 @@ If several rough floors or walls point to the same smoothed def, the mod skips t
 
 For walls, use `<unsmoothedThing>Some_RoughWallThingDef</unsmoothedThing>` instead.
 
-The mod includes a patch for Quarry mod to turn the "Reclaimed soil" back into the "Quarried ground"
+To intentionally prevent a smoothed floor or wall from being unsmoothed, add:
+
+```xml
+<li Class="LambdaTenEleven.UnsmoothSurface.UnsmoothSurfaceExtension">
+  <disableUnsmooth>true</disableUnsmooth>
+</li>
+```
+
+The mod includes a patch for Quarry mod to turn the "Reclaimed soil" back into the "Quarried ground. Tbf I don't know if it does make sense, so if you want, you can disable it by editing [QuarryCompatibilityPatch.xml](Patches/QuarryCompatibilityPatch.xml) and using `disableUnsmooth` as in the example above.
 
 ## Contributing
 

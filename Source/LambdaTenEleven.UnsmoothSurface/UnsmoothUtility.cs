@@ -81,7 +81,13 @@ namespace LambdaTenEleven.UnsmoothSurface
             // 1. load terrain patches
             foreach (var smoothedTerrain in terrainDefs)
             {
-                var explicitRoughTerrain = smoothedTerrain.GetModExtension<UnsmoothSurfaceExtension>()?.unsmoothedTerrain;
+                var extension = smoothedTerrain.GetModExtension<UnsmoothSurfaceExtension>();
+                if (IsUnsmoothDisabled(smoothedTerrain))
+                {
+                    continue;
+                }
+
+                var explicitRoughTerrain = extension?.unsmoothedTerrain;
                 if (explicitRoughTerrain != null && explicitRoughTerrain != smoothedTerrain)
                 {
                     roughTerrainBySmoothedTerrain[smoothedTerrain] = explicitRoughTerrain;
@@ -92,7 +98,7 @@ namespace LambdaTenEleven.UnsmoothSurface
             foreach (var roughTerrain in terrainDefs)
             {
                 var smoothedTerrain = roughTerrain.smoothedTerrain;
-                if (smoothedTerrain != null && smoothedTerrain != roughTerrain)
+                if (smoothedTerrain != null && smoothedTerrain != roughTerrain && !IsUnsmoothDisabled(smoothedTerrain))
                 {
                     AddCandidate(candidatesBySmoothedTerrain, smoothedTerrain, roughTerrain);
                 }
@@ -136,6 +142,12 @@ namespace LambdaTenEleven.UnsmoothSurface
             // 1. load wall patches
             foreach (var smoothedWall in thingDefs)
             {
+                var extension = smoothedWall.GetModExtension<UnsmoothSurfaceExtension>();
+                if (IsUnsmoothDisabled(smoothedWall))
+                {
+                    continue;
+                }
+
                 var explicitRoughWall = smoothedWall.building?.unsmoothedThing;
                 if (explicitRoughWall?.building != null && explicitRoughWall != smoothedWall)
                 {
@@ -143,7 +155,7 @@ namespace LambdaTenEleven.UnsmoothSurface
                     continue;
                 }
 
-                explicitRoughWall = smoothedWall.GetModExtension<UnsmoothSurfaceExtension>()?.unsmoothedThing;
+                explicitRoughWall = extension?.unsmoothedThing;
                 if (explicitRoughWall?.building != null && explicitRoughWall != smoothedWall)
                 {
                     roughWallBySmoothedWall[smoothedWall] = explicitRoughWall;
@@ -154,7 +166,7 @@ namespace LambdaTenEleven.UnsmoothSurface
             foreach (var roughWall in thingDefs)
             {
                 var smoothedWall = roughWall.building?.smoothedThing;
-                if (smoothedWall?.building != null && smoothedWall != roughWall)
+                if (smoothedWall?.building != null && smoothedWall != roughWall && !IsUnsmoothDisabled(smoothedWall))
                 {
                     AddCandidate(candidatesBySmoothedWall, smoothedWall, roughWall);
                 }
@@ -176,6 +188,11 @@ namespace LambdaTenEleven.UnsmoothSurface
 
                 Log.Warning($"[UnsmoothSurface] Skipping ambiguous wall mapping for {candidateGroup.Key.defName}. Candidates: {FormatDefs(candidateGroup.Value)}. Add {nameof(UnsmoothSurfaceExtension)} to choose an unsmoothed wall.");
             }
+        }
+
+        private static bool IsUnsmoothDisabled<TDef>(TDef def) where TDef : Def
+        {
+            return def.GetModExtension<UnsmoothSurfaceExtension>()?.disableUnsmooth == true;
         }
 
         private static void AddCandidate<TDef>(Dictionary<TDef, List<TDef>> candidatesBySmoothedDef, TDef smoothedDef, TDef roughDef) where TDef : Def
