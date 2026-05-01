@@ -42,12 +42,5 @@ namespace LambdaTenEleven.UnsmoothSurface
         {
             internal const string WorkLeft = "workLeft";
         }
-
-        internal static class DefNamePatterns
-        {
-            internal const string SmoothSuffix = "_Smooth";
-            internal const string RoughHewnSuffix = "_RoughHewn";
-            internal const string SmoothedPrefix = "Smoothed";
-        }
     }
 }
