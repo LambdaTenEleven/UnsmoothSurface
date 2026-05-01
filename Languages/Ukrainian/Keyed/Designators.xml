@@ -6,7 +6,7 @@
   <DesignatorUnsmoothWallDesc>Розбити цю відполіровану кам'яну стіну, повернувши її до грубого стану.</DesignatorUnsmoothWallDesc>
   <SurfaceBeingUnsmoothed>Територія вже відмічена для розбивання.</SurfaceBeingUnsmoothed>
 
-  <UnsmoothSurfaceSettingsCategory>Розбивання поверхонь</UnsmoothSurfaceSettingsCategory>
+  <UnsmoothSurfaceSettingsCategory>Unsmooth Surface</UnsmoothSurfaceSettingsCategory>
   <UnsmoothSurfaceSettingsWorkAmountNote>Обсяг роботи, потрібний для розбивання відполірованих поверхонь. Менші значення пришвидшують роботу.</UnsmoothSurfaceSettingsWorkAmountNote>
   <UnsmoothSurfaceSettingsFloorWorkAmount>Обсяг роботи для підлоги</UnsmoothSurfaceSettingsFloorWorkAmount>
   <UnsmoothSurfaceSettingsWallWorkAmount>Обсяг роботи для стіни</UnsmoothSurfaceSettingsWallWorkAmount>

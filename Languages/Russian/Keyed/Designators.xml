@@ -6,7 +6,7 @@
   <DesignatorUnsmoothWallDesc>Разбить эту выровненную каменную стену, вернув её в необработанное состояние.</DesignatorUnsmoothWallDesc>
   <SurfaceBeingUnsmoothed>Поверхность уже отмечена для разбивания.</SurfaceBeingUnsmoothed>
 
-  <UnsmoothSurfaceSettingsCategory>Разбивание поверхностей</UnsmoothSurfaceSettingsCategory>
+  <UnsmoothSurfaceSettingsCategory>Unsmooth Surface</UnsmoothSurfaceSettingsCategory>
   <UnsmoothSurfaceSettingsWorkAmountNote>Объём работы, необходимый для разбивания выровненных поверхностей. Меньшие значения ускоряют работу.</UnsmoothSurfaceSettingsWorkAmountNote>
   <UnsmoothSurfaceSettingsFloorWorkAmount>Объём работы для пола</UnsmoothSurfaceSettingsFloorWorkAmount>
   <UnsmoothSurfaceSettingsWallWorkAmount>Объём работы для стены</UnsmoothSurfaceSettingsWallWorkAmount>

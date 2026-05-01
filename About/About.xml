@@ -6,5 +6,14 @@
     <li>1.6</li>
   </supportedVersions>
   <packageId>LambdaTenEleven.UnsmoothSurface</packageId>
-  <description>Adds a designator allowing pawns to break up smoothed rock floors and walls back into rough stone.</description>
+  <modVersion>1.0.0</modVersion>
+  <description>
+Adds an Unsmooth Surface order for reverting smoothed stone floors and walls back to rough rock.
+
+Colonists break smoothed surfaces as Mining work and gain Mining exp. Smoothed walls can also be selected directly and unsmoothed with a gizmo. When god mode is enabled, unsmoothing happens instantly.
+
+Should be compatible with most mods that add new stone types like Alpha Biomes. But some mods add multiple rough terrain for one smooth floor like the Quarry mod, so an xml patch is needed.
+
+Github link: https://github.com/LambdaTenEleven/UnsmoothSurface
+  </description>
 </ModMetaData>
