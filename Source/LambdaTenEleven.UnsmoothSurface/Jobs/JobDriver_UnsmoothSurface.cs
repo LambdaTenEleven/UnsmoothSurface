@@ -7,13 +7,12 @@ namespace LambdaTenEleven.UnsmoothSurface
 {
     public class JobDriver_UnsmoothSurface : JobDriver
     {
-        private const float WorkRequired = 1000f;
-
         private static DesignationDef UnsmoothDesignationDef => DefDatabase<DesignationDef>.GetNamed(UnsmoothConstants.DefNames.UnsmoothDesignation);
 
         private static SoundDef PickHitSoundDef => DefDatabase<SoundDef>.GetNamed(UnsmoothConstants.DefNames.PickHitSound);
 
         private float _workLeft;
+        private float _workRequired;
 
         private IntVec3 TargetCell => job.GetTarget(TargetIndex.A).Cell;
 
@@ -26,6 +25,7 @@ namespace LambdaTenEleven.UnsmoothSurface
         {
             base.ExposeData();
             Scribe_Values.Look(ref _workLeft, UnsmoothConstants.ScribeKeys.WorkLeft);
+            Scribe_Values.Look(ref _workRequired, UnsmoothConstants.ScribeKeys.WorkRequired, UnsmoothSurfaceSettings.DefaultFloorWorkRequired);
         }
 
         protected override IEnumerable<Toil> MakeNewToils()
@@ -41,7 +41,8 @@ namespace LambdaTenEleven.UnsmoothSurface
             var toil = ToilMaker.MakeToil(UnsmoothConstants.ToilNames.UnsmoothSurface);
             toil.initAction = delegate
             {
-                _workLeft = WorkRequired;
+                _workRequired = UnsmoothSurfaceMod.Settings.WorkRequiredFor(TargetCell, Map);
+                _workLeft = _workRequired;
             };
 
             toil.tickAction = delegate
@@ -55,7 +56,7 @@ namespace LambdaTenEleven.UnsmoothSurface
 
             toil.defaultCompleteMode = ToilCompleteMode.Never;
             toil.activeSkill = () => SkillDefOf.Mining;
-            toil.WithProgressBar(TargetIndex.A, () => 1f - _workLeft / WorkRequired);
+            toil.WithProgressBar(TargetIndex.A, () => 1f - _workLeft / _workRequired);
             toil.WithEffect(EffecterDefOf.Mine, TargetIndex.A);
             toil.PlaySustainerOrSound(() => PickHitSoundDef);
             return toil;

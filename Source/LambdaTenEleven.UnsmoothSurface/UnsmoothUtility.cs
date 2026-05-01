@@ -32,6 +32,11 @@ namespace LambdaTenEleven.UnsmoothSurface
             return RoughWallFor(thing) != null;
         }
 
+        public static bool CanUnsmoothWall(IntVec3 cell, Map map)
+        {
+            return cell.InBounds(map) && RoughWallFor(cell.GetEdifice(map)) != null;
+        }
+
         public static bool TryUnsmooth(IntVec3 cell, Map map)
         {
             var edifice = cell.GetEdifice(map);

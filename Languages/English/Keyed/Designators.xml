@@ -6,4 +6,10 @@
   <DesignatorUnsmoothWallDesc>Break up this smoothed rock wall, reverting it to rough stone.</DesignatorUnsmoothWallDesc>
   <SurfaceBeingUnsmoothed>The surface is already marked for unsmoothing.</SurfaceBeingUnsmoothed>
 
+  <UnsmoothSurfaceSettingsCategory>Unsmooth Surface</UnsmoothSurfaceSettingsCategory>
+  <UnsmoothSurfaceSettingsWorkAmountNote>Work amount required to unsmooth surfaces. Lower values are faster.</UnsmoothSurfaceSettingsWorkAmountNote>
+  <UnsmoothSurfaceSettingsFloorWorkAmount>Floor work amount</UnsmoothSurfaceSettingsFloorWorkAmount>
+  <UnsmoothSurfaceSettingsWallWorkAmount>Wall work amount</UnsmoothSurfaceSettingsWallWorkAmount>
+  <UnsmoothSurfaceSettingsResetDefaults>Reset to defaults</UnsmoothSurfaceSettingsResetDefaults>
+
 </LanguageData>

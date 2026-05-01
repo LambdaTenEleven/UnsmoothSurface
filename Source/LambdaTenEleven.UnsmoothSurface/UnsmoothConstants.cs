@@ -25,6 +25,11 @@ namespace LambdaTenEleven.UnsmoothSurface
             internal const string DesignatorUnsmoothWallDesc = "DesignatorUnsmoothWallDesc";
             internal const string SurfaceBeingUnsmoothed = "SurfaceBeingUnsmoothed";
             internal const string MessageMustDesignateUnsmoothableSurface = "MessageMustDesignateUnsmoothableSurface";
+            internal const string SettingsCategory = "UnsmoothSurfaceSettingsCategory";
+            internal const string SettingsWorkAmountNote = "UnsmoothSurfaceSettingsWorkAmountNote";
+            internal const string SettingsFloorWorkAmount = "UnsmoothSurfaceSettingsFloorWorkAmount";
+            internal const string SettingsWallWorkAmount = "UnsmoothSurfaceSettingsWallWorkAmount";
+            internal const string SettingsResetDefaults = "UnsmoothSurfaceSettingsResetDefaults";
         }
 
         internal static class TutorTags
@@ -40,7 +45,10 @@ namespace LambdaTenEleven.UnsmoothSurface
 
         internal static class ScribeKeys
         {
+            internal const string FloorWorkRequired = "floorWorkRequired";
+            internal const string WallWorkRequired = "wallWorkRequired";
             internal const string WorkLeft = "workLeft";
+            internal const string WorkRequired = "workRequired";
         }
     }
 }
