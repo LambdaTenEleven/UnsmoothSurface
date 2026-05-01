@@ -7,6 +7,8 @@ namespace LambdaTenEleven.UnsmoothSurface
 {
     public class JobDriver_UnsmoothSurface : JobDriver
     {
+        private const float XpPerTick = 0.07f;
+
         private static DesignationDef UnsmoothDesignationDef => DefDatabase<DesignationDef>.GetNamed(UnsmoothConstants.DefNames.UnsmoothDesignation);
 
         private static SoundDef PickHitSoundDef => DefDatabase<SoundDef>.GetNamed(UnsmoothConstants.DefNames.PickHitSound);
@@ -48,6 +50,8 @@ namespace LambdaTenEleven.UnsmoothSurface
             toil.tickAction = delegate
             {
                 _workLeft -= pawn.GetStatValue(StatDefOf.MiningSpeed);
+                pawn.skills?.Learn(SkillDefOf.Mining, XpPerTick);
+
                 if (_workLeft <= 0f)
                 {
                     toil.actor.jobs.curDriver.ReadyForNextToil();

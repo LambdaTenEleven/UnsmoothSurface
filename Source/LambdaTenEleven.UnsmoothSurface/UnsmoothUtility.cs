@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Verse;
 
 namespace LambdaTenEleven.UnsmoothSurface
@@ -14,6 +15,8 @@ namespace LambdaTenEleven.UnsmoothSurface
             BuildTerrainLookup();
             BuildWallLookup();
             Log.Message($"[UnsmoothSurface] Initialized with {roughTerrainBySmoothedTerrain.Count} terrain pairs and {roughWallBySmoothedWall.Count} wall pairs.");
+            Log.Message($"[UnsmoothSurface] Cached floors: {FormatDefPairs(roughTerrainBySmoothedTerrain)}");
+            Log.Message($"[UnsmoothSurface] Cached walls: {FormatDefPairs(roughWallBySmoothedWall)}");
         }
 
         public static bool CanUnsmooth(IntVec3 cell, Map map)
@@ -72,36 +75,133 @@ namespace LambdaTenEleven.UnsmoothSurface
 
         private static void BuildTerrainLookup()
         {
-            foreach (var roughTerrain in DefDatabase<TerrainDef>.AllDefsListForReading)
+            var candidatesBySmoothedTerrain = new Dictionary<TerrainDef, List<TerrainDef>>();
+            var terrainDefs = DefDatabase<TerrainDef>.AllDefsListForReading;
+
+            // 1. load terrain patches
+            foreach (var smoothedTerrain in terrainDefs)
+            {
+                var explicitRoughTerrain = smoothedTerrain.GetModExtension<UnsmoothSurfaceExtension>()?.unsmoothedTerrain;
+                if (explicitRoughTerrain != null && explicitRoughTerrain != smoothedTerrain)
+                {
+                    roughTerrainBySmoothedTerrain[smoothedTerrain] = explicitRoughTerrain;
+                }
+            }
+
+            // 2. load terrain defs
+            foreach (var roughTerrain in terrainDefs)
             {
                 var smoothedTerrain = roughTerrain.smoothedTerrain;
                 if (smoothedTerrain != null && smoothedTerrain != roughTerrain)
                 {
-                    roughTerrainBySmoothedTerrain[smoothedTerrain] = roughTerrain;
+                    AddCandidate(candidatesBySmoothedTerrain, smoothedTerrain, roughTerrain);
                 }
             }
+
+            // 3. resolve ambiguous terrain mappings
+            foreach (var candidateGroup in candidatesBySmoothedTerrain)
+            {
+                if (roughTerrainBySmoothedTerrain.ContainsKey(candidateGroup.Key))
+                {
+                    continue;
+                }
+
+                var roughTerrain = ResolveTerrainCandidate(candidateGroup.Value);
+                if (roughTerrain != null)
+                {
+                    roughTerrainBySmoothedTerrain[candidateGroup.Key] = roughTerrain;
+                    continue;
+                }
+
+                Log.Warning($"[UnsmoothSurface] Skipping ambiguous floor mapping for {candidateGroup.Key.defName}. Candidates: {FormatDefs(candidateGroup.Value)}. Add {nameof(UnsmoothSurfaceExtension)} to choose an unsmoothed terrain.");
+            }
+        }
+
+        private static TerrainDef ResolveTerrainCandidate(List<TerrainDef> candidates)
+        {
+            if (candidates.Count == 1)
+            {
+                return candidates[0];
+            }
+
+            var roughHewnCandidates = candidates.Where(candidate => candidate.defName.EndsWith("_RoughHewn")).ToList();
+            return roughHewnCandidates.Count == 1 ? roughHewnCandidates[0] : null;
         }
 
         private static void BuildWallLookup()
         {
             var thingDefs = DefDatabase<ThingDef>.AllDefsListForReading;
+            var candidatesBySmoothedWall = new Dictionary<ThingDef, List<ThingDef>>();
+
+            // 1. load wall patches
             foreach (var smoothedWall in thingDefs)
             {
-                var roughWall = smoothedWall.building?.unsmoothedThing;
-                if (roughWall?.building != null && roughWall != smoothedWall)
+                var explicitRoughWall = smoothedWall.building?.unsmoothedThing;
+                if (explicitRoughWall?.building != null && explicitRoughWall != smoothedWall)
                 {
-                    roughWallBySmoothedWall[smoothedWall] = roughWall;
+                    roughWallBySmoothedWall[smoothedWall] = explicitRoughWall;
+                    continue;
+                }
+
+                explicitRoughWall = smoothedWall.GetModExtension<UnsmoothSurfaceExtension>()?.unsmoothedThing;
+                if (explicitRoughWall?.building != null && explicitRoughWall != smoothedWall)
+                {
+                    roughWallBySmoothedWall[smoothedWall] = explicitRoughWall;
                 }
             }
 
+            // 2. load wall defs
             foreach (var roughWall in thingDefs)
             {
                 var smoothedWall = roughWall.building?.smoothedThing;
                 if (smoothedWall?.building != null && smoothedWall != roughWall)
                 {
-                    roughWallBySmoothedWall.TryAdd(smoothedWall, roughWall);
+                    AddCandidate(candidatesBySmoothedWall, smoothedWall, roughWall);
                 }
             }
+
+            // 3. resolve ambiguous wall mappings
+            foreach (var candidateGroup in candidatesBySmoothedWall)
+            {
+                if (roughWallBySmoothedWall.ContainsKey(candidateGroup.Key))
+                {
+                    continue;
+                }
+
+                if (candidateGroup.Value.Count == 1)
+                {
+                    roughWallBySmoothedWall[candidateGroup.Key] = candidateGroup.Value[0];
+                    continue;
+                }
+
+                Log.Warning($"[UnsmoothSurface] Skipping ambiguous wall mapping for {candidateGroup.Key.defName}. Candidates: {FormatDefs(candidateGroup.Value)}. Add {nameof(UnsmoothSurfaceExtension)} to choose an unsmoothed wall.");
+            }
+        }
+
+        private static void AddCandidate<TDef>(Dictionary<TDef, List<TDef>> candidatesBySmoothedDef, TDef smoothedDef, TDef roughDef) where TDef : Def
+        {
+            if (!candidatesBySmoothedDef.TryGetValue(smoothedDef, out var candidates))
+            {
+                candidates = new List<TDef>();
+                candidatesBySmoothedDef[smoothedDef] = candidates;
+            }
+
+            if (!candidates.Contains(roughDef))
+            {
+                candidates.Add(roughDef);
+            }
+        }
+
+        private static string FormatDefPairs<TDef>(Dictionary<TDef, TDef> pairs) where TDef : Def
+        {
+            return pairs.Any()
+                ? string.Join(", ", pairs.Select(pair => $"{pair.Key.defName} -> {pair.Value.defName}"))
+                : "none";
+        }
+
+        private static string FormatDefs<TDef>(IEnumerable<TDef> defs) where TDef : Def
+        {
+            return string.Join(", ", defs.Select(def => def.defName));
         }
     }
 }
