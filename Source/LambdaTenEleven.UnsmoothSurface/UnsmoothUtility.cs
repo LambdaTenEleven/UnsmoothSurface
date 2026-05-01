@@ -7,8 +7,8 @@ namespace LambdaTenEleven.UnsmoothSurface
     [StaticConstructorOnStartup]
     public static class UnsmoothUtility
     {
-        private static readonly Dictionary<TerrainDef, TerrainDef> roughTerrainBySmoothedTerrain = new Dictionary<TerrainDef, TerrainDef>();
-        private static readonly Dictionary<ThingDef, ThingDef> roughWallBySmoothedWall = new Dictionary<ThingDef, ThingDef>();
+        private static readonly Dictionary<string, string> roughTerrainBySmoothedTerrain = new Dictionary<string, string>();
+        private static readonly Dictionary<string, string> roughWallBySmoothedWall = new Dictionary<string, string>();
 
         static UnsmoothUtility()
         {
@@ -63,14 +63,16 @@ namespace LambdaTenEleven.UnsmoothSurface
 
         private static TerrainDef RoughTerrainFor(TerrainDef terrain)
         {
-            return terrain != null && roughTerrainBySmoothedTerrain.TryGetValue(terrain, out var roughTerrain)
-                ? roughTerrain
+            return terrain != null && roughTerrainBySmoothedTerrain.TryGetValue(terrain.defName, out var roughTerrainDefName)
+                ? DefDatabase<TerrainDef>.GetNamedSilentFail(roughTerrainDefName)
                 : null;
         }
 
         private static ThingDef RoughWallFor(Thing edifice)
         {
-            return edifice == null ? null : roughWallBySmoothedWall.GetValueOrDefault(edifice.def);
+            return edifice != null && roughWallBySmoothedWall.TryGetValue(edifice.def.defName, out var roughWallDefName)
+                ? DefDatabase<ThingDef>.GetNamedSilentFail(roughWallDefName)
+                : null;
         }
 
         private static void BuildTerrainLookup()
@@ -90,7 +92,7 @@ namespace LambdaTenEleven.UnsmoothSurface
                 var explicitRoughTerrain = extension?.unsmoothedTerrain;
                 if (explicitRoughTerrain != null && explicitRoughTerrain != smoothedTerrain)
                 {
-                    roughTerrainBySmoothedTerrain[smoothedTerrain] = explicitRoughTerrain;
+                    roughTerrainBySmoothedTerrain[smoothedTerrain.defName] = explicitRoughTerrain.defName;
                 }
             }
 
@@ -107,7 +109,7 @@ namespace LambdaTenEleven.UnsmoothSurface
             // 3. resolve ambiguous terrain mappings
             foreach (var candidateGroup in candidatesBySmoothedTerrain)
             {
-                if (roughTerrainBySmoothedTerrain.ContainsKey(candidateGroup.Key))
+                if (roughTerrainBySmoothedTerrain.ContainsKey(candidateGroup.Key.defName))
                 {
                     continue;
                 }
@@ -115,7 +117,7 @@ namespace LambdaTenEleven.UnsmoothSurface
                 var roughTerrain = ResolveTerrainCandidate(candidateGroup.Value);
                 if (roughTerrain != null)
                 {
-                    roughTerrainBySmoothedTerrain[candidateGroup.Key] = roughTerrain;
+                    roughTerrainBySmoothedTerrain[candidateGroup.Key.defName] = roughTerrain.defName;
                     continue;
                 }
 
@@ -151,14 +153,14 @@ namespace LambdaTenEleven.UnsmoothSurface
                 var explicitRoughWall = smoothedWall.building?.unsmoothedThing;
                 if (explicitRoughWall?.building != null && explicitRoughWall != smoothedWall)
                 {
-                    roughWallBySmoothedWall[smoothedWall] = explicitRoughWall;
+                    roughWallBySmoothedWall[smoothedWall.defName] = explicitRoughWall.defName;
                     continue;
                 }
 
                 explicitRoughWall = extension?.unsmoothedThing;
                 if (explicitRoughWall?.building != null && explicitRoughWall != smoothedWall)
                 {
-                    roughWallBySmoothedWall[smoothedWall] = explicitRoughWall;
+                    roughWallBySmoothedWall[smoothedWall.defName] = explicitRoughWall.defName;
                 }
             }
 
@@ -175,14 +177,14 @@ namespace LambdaTenEleven.UnsmoothSurface
             // 3. resolve ambiguous wall mappings
             foreach (var candidateGroup in candidatesBySmoothedWall)
             {
-                if (roughWallBySmoothedWall.ContainsKey(candidateGroup.Key))
+                if (roughWallBySmoothedWall.ContainsKey(candidateGroup.Key.defName))
                 {
                     continue;
                 }
 
                 if (candidateGroup.Value.Count == 1)
                 {
-                    roughWallBySmoothedWall[candidateGroup.Key] = candidateGroup.Value[0];
+                    roughWallBySmoothedWall[candidateGroup.Key.defName] = candidateGroup.Value[0].defName;
                     continue;
                 }
 
@@ -209,10 +211,10 @@ namespace LambdaTenEleven.UnsmoothSurface
             }
         }
 
-        private static string FormatDefPairs<TDef>(Dictionary<TDef, TDef> pairs) where TDef : Def
+        private static string FormatDefPairs(Dictionary<string, string> pairs)
         {
             return pairs.Any()
-                ? string.Join(", ", pairs.Select(pair => $"{pair.Key.defName} -> {pair.Value.defName}"))
+                ? string.Join(", ", pairs.Select(pair => $"{pair.Key} -> {pair.Value}"))
                 : "none";
         }
 
