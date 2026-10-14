@@ -3,85 +3,84 @@ using RimWorld;
 using Verse;
 using Verse.AI;
 
-namespace LambdaTenEleven.UnsmoothSurface
+namespace LambdaTenEleven.UnsmoothSurface;
+
+public class JobDriver_UnsmoothSurface : JobDriver
 {
-    public class JobDriver_UnsmoothSurface : JobDriver
+    private const float XpPerTick = 0.07f;
+
+    private static DesignationDef UnsmoothDesignationDef => DefDatabase<DesignationDef>.GetNamed(UnsmoothConstants.DefNames.UnsmoothDesignation);
+
+    private static SoundDef PickHitSoundDef => DefDatabase<SoundDef>.GetNamed(UnsmoothConstants.DefNames.PickHitSound);
+
+    private float _workLeft;
+    private float _workRequired;
+
+    private IntVec3 TargetCell => job.GetTarget(TargetIndex.A).Cell;
+
+    public override bool TryMakePreToilReservations(bool errorOnFailed)
     {
-        private const float XpPerTick = 0.07f;
+        return pawn.Reserve(TargetCell, job, 1, -1, null, errorOnFailed);
+    }
 
-        private static DesignationDef UnsmoothDesignationDef => DefDatabase<DesignationDef>.GetNamed(UnsmoothConstants.DefNames.UnsmoothDesignation);
+    public override void ExposeData()
+    {
+        base.ExposeData();
+        Scribe_Values.Look(ref _workLeft, UnsmoothConstants.ScribeKeys.WorkLeft);
+        Scribe_Values.Look(ref _workRequired, UnsmoothConstants.ScribeKeys.WorkRequired, UnsmoothSurfaceSettings.DefaultFloorWorkRequired);
+    }
 
-        private static SoundDef PickHitSoundDef => DefDatabase<SoundDef>.GetNamed(UnsmoothConstants.DefNames.PickHitSound);
+    protected override IEnumerable<Toil> MakeNewToils()
+    {
+        this.FailOn(() => !UnsmoothUtility.CanUnsmooth(TargetCell, Map));
+        yield return Toils_Goto.GotoCell(TargetIndex.A, PathEndMode.Touch);
+        yield return MakeUnsmoothToil();
+        yield return MakeFinishToil();
+    }
 
-        private float _workLeft;
-        private float _workRequired;
-
-        private IntVec3 TargetCell => job.GetTarget(TargetIndex.A).Cell;
-
-        public override bool TryMakePreToilReservations(bool errorOnFailed)
+    private Toil MakeUnsmoothToil()
+    {
+        var toil = ToilMaker.MakeToil(UnsmoothConstants.ToilNames.UnsmoothSurface);
+        toil.initAction = delegate
         {
-            return pawn.Reserve(TargetCell, job, 1, -1, null, errorOnFailed);
-        }
+            _workRequired = UnsmoothSurfaceMod.Settings.WorkRequiredFor(TargetCell, Map);
+            _workLeft = _workRequired;
+        };
 
-        public override void ExposeData()
+        toil.tickAction = delegate
         {
-            base.ExposeData();
-            Scribe_Values.Look(ref _workLeft, UnsmoothConstants.ScribeKeys.WorkLeft);
-            Scribe_Values.Look(ref _workRequired, UnsmoothConstants.ScribeKeys.WorkRequired, UnsmoothSurfaceSettings.DefaultFloorWorkRequired);
-        }
+            _workLeft -= pawn.GetStatValue(StatDefOf.MiningSpeed);
+            pawn.skills?.Learn(SkillDefOf.Mining, XpPerTick);
 
-        protected override IEnumerable<Toil> MakeNewToils()
-        {
-            this.FailOn(() => !UnsmoothUtility.CanUnsmooth(TargetCell, Map));
-            yield return Toils_Goto.GotoCell(TargetIndex.A, PathEndMode.Touch);
-            yield return MakeUnsmoothToil();
-            yield return MakeFinishToil();
-        }
-
-        private Toil MakeUnsmoothToil()
-        {
-            var toil = ToilMaker.MakeToil(UnsmoothConstants.ToilNames.UnsmoothSurface);
-            toil.initAction = delegate
+            if (_workLeft <= 0f)
             {
-                _workRequired = UnsmoothSurfaceMod.Settings.WorkRequiredFor(TargetCell, Map);
-                _workLeft = _workRequired;
-            };
+                toil.actor.jobs.curDriver.ReadyForNextToil();
+            }
+        };
 
-            toil.tickAction = delegate
-            {
-                _workLeft -= pawn.GetStatValue(StatDefOf.MiningSpeed);
-                pawn.skills?.Learn(SkillDefOf.Mining, XpPerTick);
+        toil.defaultCompleteMode = ToilCompleteMode.Never;
+        toil.activeSkill = () => SkillDefOf.Mining;
+        toil.WithProgressBar(TargetIndex.A, () => 1f - _workLeft / _workRequired);
+        toil.WithEffect(EffecterDefOf.Mine, TargetIndex.A);
+        toil.PlaySustainerOrSound(() => PickHitSoundDef);
+        return toil;
+    }
 
-                if (_workLeft <= 0f)
-                {
-                    toil.actor.jobs.curDriver.ReadyForNextToil();
-                }
-            };
-
-            toil.defaultCompleteMode = ToilCompleteMode.Never;
-            toil.activeSkill = () => SkillDefOf.Mining;
-            toil.WithProgressBar(TargetIndex.A, () => 1f - _workLeft / _workRequired);
-            toil.WithEffect(EffecterDefOf.Mine, TargetIndex.A);
-            toil.PlaySustainerOrSound(() => PickHitSoundDef);
-            return toil;
-        }
-
-        private Toil MakeFinishToil()
+    private Toil MakeFinishToil()
+    {
+        var toil = ToilMaker.MakeToil(UnsmoothConstants.ToilNames.FinishUnsmoothSurface);
+        toil.initAction = delegate
         {
-            var toil = ToilMaker.MakeToil(UnsmoothConstants.ToilNames.FinishUnsmoothSurface);
-            toil.initAction = delegate
+            UnsmoothUtility.TryUnsmooth(TargetCell, Map);
+
+            var designation = Map.designationManager.DesignationAt(TargetCell, UnsmoothDesignationDef);
+            if (designation != null)
             {
-                UnsmoothUtility.TryUnsmooth(TargetCell, Map);
+                Map.designationManager.RemoveDesignation(designation);
+            }
+        };
 
-                var designation = Map.designationManager.DesignationAt(TargetCell, UnsmoothDesignationDef);
-                if (designation != null)
-                {
-                    Map.designationManager.RemoveDesignation(designation);
-                }
-            };
-
-            toil.defaultCompleteMode = ToilCompleteMode.Instant;
-            return toil;
-        }
+        toil.defaultCompleteMode = ToilCompleteMode.Instant;
+        return toil;
     }
 }

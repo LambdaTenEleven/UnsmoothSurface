@@ -1,16 +1,31 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net472</TargetFramework>
+        <TargetFrameworks>net472;net10.0</TargetFrameworks>
+        <LangVersion>14.0</LangVersion>
         <ImplicitUsings>disable</ImplicitUsings>
         <AssemblyName>LambdaTenEleven.UnsmoothSurface</AssemblyName>
         <RootNamespace>LambdaTenEleven.UnsmoothSurface</RootNamespace>
-        <OutputPath>..\..\Assemblies\</OutputPath>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <IntermediateOutputPath>obj\$(Configuration)\$(TargetFramework)\</IntermediateOutputPath>
+        <GenerateDependencyFile>false</GenerateDependencyFile>
+        <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
     </PropertyGroup>
 
-    <ItemGroup>
+    <PropertyGroup Condition="'$(TargetFramework)' == 'net472'">
+        <OutputPath>..\..\1.6\Assemblies\</OutputPath>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0'">
+        <OutputPath>..\..\1.7\Assemblies\</OutputPath>
+    </PropertyGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
       <PackageReference Include="Krafs.Rimworld.Ref" Version="1.6.4633" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
+      <PackageReference Include="Krafs.Rimworld.Ref" Version="1.7.4977-alpha.1" />
     </ItemGroup>
 
 </Project>

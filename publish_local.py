@@ -12,7 +12,10 @@ DEFAULT_STEAM_MODS_DIR = Path(
     r"C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods"
 )
 PROJECT_FILE = Path("Source") / "LambdaTenEleven.UnsmoothSurface" / "LambdaTenEleven.UnsmoothSurface.csproj"
-PUBLISH_DIRS = ("About", "Assemblies", "Defs", "Languages", "Patches", "Textures")
+SUPPORTED_VERSIONS = ("1.6", "1.7")
+PUBLISH_DIRS = ("About", *SUPPORTED_VERSIONS, "Defs", "Languages", "Patches", "Textures")
+PUBLISH_FILES = ("LoadFolders.xml",)
+ASSEMBLY_NAME = "LambdaTenEleven.UnsmoothSurface.dll"
 EXCLUDED_FILE_SUFFIXES = {".pdb"}
 
 
@@ -67,6 +70,22 @@ def main() -> int:
         check=True,
     )
 
+    for directory_name in PUBLISH_DIRS:
+        source = repo_root / directory_name
+        if not source.is_dir():
+            print(f"Required mod directory was not found: {source}", file=sys.stderr)
+            return 1
+
+    required_files = [repo_root / name for name in PUBLISH_FILES]
+    required_files.extend(
+        repo_root / version / "Assemblies" / ASSEMBLY_NAME
+        for version in SUPPORTED_VERSIONS
+    )
+    for source in required_files:
+        if not source.is_file():
+            print(f"Required mod file was not found: {source}", file=sys.stderr)
+            return 1
+
     if destination.exists():
         if destination.resolve().parent != steam_mods_dir:
             print(f"Refusing to remove unexpected path: {destination}", file=sys.stderr)
@@ -80,10 +99,10 @@ def main() -> int:
 
     for directory_name in PUBLISH_DIRS:
         source = repo_root / directory_name
-        if not source.exists():
-            continue
-
         copy_runtime_tree(source, destination / directory_name)
+
+    for file_name in PUBLISH_FILES:
+        shutil.copy2(repo_root / file_name, destination / file_name)
 
     print("Done.")
     return 0

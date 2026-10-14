@@ -1,6 +1,12 @@
 ﻿# Unsmooth Surface
 
+[![RimWorld 1.6 and 1.7](https://img.shields.io/badge/RimWorld-1.6%20%7C%201.7-blue)](#compatibility)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+[![Steam Workshop](https://img.shields.io/badge/Steam_Workshop-Subscribe-1b2838?logo=steam&logoColor=white)](https://steamcommunity.com/sharedfiles/filedetails/?id=3717703166)
+
 ![Image](/About/Preview.png)
+
+Get the mod on [Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3717703166).
 
 My first Rimworld mod that allows players to unsmooth smoothed surfaces.
 
@@ -10,7 +16,9 @@ Adds a new job `UnsmoothSurfaceJob` (check [Jobs.xml](Defs/Jobs.xml)) that requr
 
 ## Compatibility
 
-In theory, it should support modded rocky walls and floors, tested it with Alpha Biomes.
+Supports 1.6 and 1.7 version.
+
+In theory, the mod should support modded rocky walls and floors, tested it with Alpha Biomes.
 
 When unsmoothing vanilla terrain, the `_RoughHewn` will be chosen.
 

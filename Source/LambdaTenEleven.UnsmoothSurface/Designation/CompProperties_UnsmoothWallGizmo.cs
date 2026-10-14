@@ -1,12 +1,11 @@
 using Verse;
 
-namespace LambdaTenEleven.UnsmoothSurface
+namespace LambdaTenEleven.UnsmoothSurface;
+
+public class CompProperties_UnsmoothWallGizmo : CompProperties
 {
-    public class CompProperties_UnsmoothWallGizmo : CompProperties
+    public CompProperties_UnsmoothWallGizmo()
     {
-        public CompProperties_UnsmoothWallGizmo()
-        {
-            compClass = typeof(CompUnsmoothWallGizmo);
-        }
+        compClass = typeof(CompUnsmoothWallGizmo);
     }
 }
